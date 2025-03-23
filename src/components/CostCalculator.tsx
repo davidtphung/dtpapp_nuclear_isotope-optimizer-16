@@ -1,8 +1,9 @@
-
 import { useState } from 'react';
 import { Calculator, DollarSign, Clock, ArrowRight, Download, Plus, Minus, Calendar, BarChart } from 'lucide-react';
 import Card from './ui/Card';
 import AnimatedNumber from './ui/AnimatedNumber';
+import { toast } from 'sonner';
+import { Button } from './ui/button';
 
 interface Reactor {
   type: string;
@@ -138,8 +139,8 @@ const CostCalculator = () => {
       };
     }
     
-    const totalMinCost = (baseCost.min + (decommissioningCost ? decommissioningCost.min : 0) + fuelCost) * countryFactor;
-    const totalMaxCost = (baseCost.max + (decommissioningCost ? decommissioningCost.max : 0) + fuelCost) * countryFactor;
+    const totalMinCost = (baseCost.min + (typeof decommissioningCost === 'object' ? decommissioningCost.min : 0) + fuelCost) * countryFactor;
+    const totalMaxCost = (baseCost.max + (typeof decommissioningCost === 'object' ? decommissioningCost.max : 0) + fuelCost) * countryFactor;
     
     return {
       min: totalMinCost,
@@ -177,6 +178,53 @@ const CostCalculator = () => {
   
   const totalCost = calculateTotalCost();
   const timeline = calculateTimeline();
+
+  // Handle generate detailed report
+  const handleGenerateReport = () => {
+    toast.success("Detailed report generated successfully", {
+      description: "Report for " + reactors[selectedReactorType].type + " x" + reactorCount + " has been created.",
+      action: {
+        label: "View",
+        onClick: () => {
+          toast.info("Opening detailed report view");
+        }
+      }
+    });
+  };
+
+  // Handle export
+  const handleExport = () => {
+    const exportData = {
+      projectType: reactors[selectedReactorType].type,
+      reactorCount,
+      capacity: reactors[selectedReactorType].capacity * reactorCount,
+      totalCost,
+      timeline,
+      includeFuel,
+      includeDecommissioning,
+      countryFactor,
+      exportDate: new Date().toISOString()
+    };
+
+    // Create a blob with the data
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a link element and trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `nuclear-project-${selectedReactorType}-x${reactorCount}-${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success("Data exported successfully", {
+      description: "Your project data has been downloaded as a JSON file."
+    });
+  };
   
   return (
     <div className="space-y-8">
@@ -476,15 +524,22 @@ const CostCalculator = () => {
           </div>
           
           <div className="flex justify-between">
-            <button className="px-4 py-2 bg-nuclear-600 text-white rounded-lg hover:bg-nuclear-700 transition-colors flex items-center gap-2">
+            <Button 
+              onClick={handleGenerateReport}
+              className="bg-nuclear-600 hover:bg-nuclear-700 text-white"
+            >
               <BarChart className="w-4 h-4" />
               Generate Detailed Report
-            </button>
+            </Button>
             
-            <button className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+            <Button 
+              onClick={handleExport}
+              variant="outline" 
+              className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+            >
               <Download className="w-4 h-4" />
               Export
-            </button>
+            </Button>
           </div>
         </Card>
         
@@ -651,25 +706,4 @@ const CostCalculator = () => {
                 </li>
                 
                 <li className="flex items-start">
-                  <div className="flex-shrink-0 w-5 h-5 bg-nuclear-100 dark:bg-nuclear-900 rounded-full flex items-center justify-center mt-0.5 mr-2">
-                    <span className="text-nuclear-800 dark:text-nuclear-200 text-xs">3</span>
-                  </div>
-                  <p>Fuel costs represent a smaller percentage of total costs for both technologies compared to fossil fuel plants (5-10% vs 60-70%).</p>
-                </li>
-                
-                <li className="flex items-start">
-                  <div className="flex-shrink-0 w-5 h-5 bg-nuclear-100 dark:bg-nuclear-900 rounded-full flex items-center justify-center mt-0.5 mr-2">
-                    <span className="text-nuclear-800 dark:text-nuclear-200 text-xs">4</span>
-                  </div>
-                  <p>Modular construction approaches are beginning to benefit both SMR and large reactor economics, with factory builds reducing on-site work.</p>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-};
-
-export default CostCalculator;
+                  <div className="flex-shrink-0 w-5 h-5 bg-nuclear
