@@ -13,7 +13,7 @@ import {
   Pickaxe,
   GitBranch
 } from 'lucide-react';
-import Card from './ui/Card';
+import { Card } from './ui/card';
 import AnimatedNumber from './ui/AnimatedNumber';
 import LineChart from './charts/LineChart';
 

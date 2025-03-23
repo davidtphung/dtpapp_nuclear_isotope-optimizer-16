@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Atom, ArrowRight, Pickaxe, GitBranch, BarChart3, Calculator } from 'lucide-react';
-import Card from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
