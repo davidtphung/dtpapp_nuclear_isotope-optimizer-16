@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Atom, ArrowRight, Pickaxe, GitBranch, BarChart3, Calculator } from 'lucide-react';
-import Card from '@/components/ui/Card';
+import Card from '@/components/ui/card';
 
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -15,7 +14,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* Hero Section */}
       <div className="px-4 py-20 md:py-32 text-center relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -274,18 +273,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-      
-      {/* Footer */}
-      <footer className="px-4 py-10 border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Presented by David T Phung • Powered by: NLT143 • Warpcast • YouTube ☕️ Podcast
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
-            © {new Date().getFullYear()} Nuclear Supply Chain Calculator • All Rights Reserved
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
