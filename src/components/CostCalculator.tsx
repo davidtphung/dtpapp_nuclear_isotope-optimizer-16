@@ -1,7 +1,10 @@
+
 import { useState } from 'react';
 import { Sliders, FileText, Download, FileBarChart2 } from 'lucide-react';
-import Card from './ui/Card';
+import { Card } from './ui/card';
 import { Button } from './ui/button';
+import { exportToExcel } from '../utils/excelExport';
+import { useToast } from './ui/use-toast';
 
 interface CostParameters {
   reactorType: 'smr' | 'large';
@@ -25,6 +28,7 @@ const CostCalculator = () => {
   });
   
   const [generatedReport, setGeneratedReport] = useState(false);
+  const { toast } = useToast();
   
   const { 
     reactorType, 
@@ -60,8 +64,85 @@ const CostCalculator = () => {
   };
   
   const handleExport = () => {
-    // Implement export functionality here
-    alert('Export functionality not implemented yet.');
+    // Create data for Excel export
+    const annualElectricity = capacity * 1000 * capacityFactor * 8760;
+    const totalCapitalCost = capitalCost * capacity * 1000;
+    const levelizedCost = calculateLevelizedCost();
+    
+    const reportData = [
+      {
+        Parameter: 'Reactor Type',
+        Value: reactorType === 'smr' ? 'Small Modular Reactor (SMR)' : 'Large-Scale Reactor',
+        Unit: ''
+      },
+      {
+        Parameter: 'Capacity',
+        Value: capacity,
+        Unit: 'MW'
+      },
+      {
+        Parameter: 'Capacity Factor',
+        Value: capacityFactor * 100,
+        Unit: '%'
+      },
+      {
+        Parameter: 'Construction Time',
+        Value: constructionTime,
+        Unit: 'years'
+      },
+      {
+        Parameter: 'Capital Cost',
+        Value: capitalCost,
+        Unit: '$/kW'
+      },
+      {
+        Parameter: 'Total Capital Cost',
+        Value: totalCapitalCost,
+        Unit: '$'
+      },
+      {
+        Parameter: 'Fuel Cost',
+        Value: fuelCost,
+        Unit: '$/MWh'
+      },
+      {
+        Parameter: 'O&M Cost',
+        Value: omCost,
+        Unit: '$/MWh'
+      },
+      {
+        Parameter: 'Carbon Intensity',
+        Value: carbonIntensity,
+        Unit: 'g CO₂/kWh'
+      },
+      {
+        Parameter: 'Annual Electricity Generation',
+        Value: annualElectricity,
+        Unit: 'MWh'
+      },
+      {
+        Parameter: 'Levelized Cost of Electricity',
+        Value: levelizedCost,
+        Unit: '$/MWh'
+      },
+      {
+        Parameter: 'Report Generation Date',
+        Value: new Date().toLocaleString(),
+        Unit: ''
+      }
+    ];
+    
+    // Export to Excel
+    exportToExcel(
+      reportData,
+      `Nuclear_Cost_Analysis_${reactorType}_${new Date().toISOString().split('T')[0]}`
+    );
+    
+    toast({
+      title: "Data Exported",
+      description: "Cost analysis data has been exported to Excel",
+      duration: 3000,
+    });
   };
 
   return (
@@ -307,7 +388,7 @@ const CostCalculator = () => {
                 className="flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
-                Export
+                Export to Excel
               </Button>
             </div>
           </div>

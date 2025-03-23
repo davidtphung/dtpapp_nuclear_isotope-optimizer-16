@@ -1,10 +1,10 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Sliders, Play, RefreshCw, Download, Map, Compass, Clock } from 'lucide-react';
-import Card from './ui/Card';
+import { Card } from './ui/card';
 import AnimatedNumber from './ui/AnimatedNumber';
 import LineChart from './charts/LineChart';
 import { useToast } from './ui/use-toast';
+import { exportToExcel } from '../utils/excelExport';
 
 // Define types for our mining simulation
 interface MiningParameters {
@@ -155,7 +155,7 @@ const MiningSimulator = () => {
         parameters.material === 'hafnium' ? 2.5 :
         parameters.material === 'lithium' ? 1.8 :
         parameters.material === 'beryllium' ? 3.0 : 0.7; // Graphite
-      
+        
       // Calculate production volume
       const productionVolume = parameters.depositSize * 
         parameters.concentration * 
@@ -222,6 +222,87 @@ const MiningSimulator = () => {
       ...prev,
       [param]: value
     }));
+  };
+  
+  // Handle the export function
+  const handleExportData = () => {
+    if (!results) return;
+    
+    // Convert main results to exportable format
+    const mainData = [
+      {
+        Parameter: 'Date Generated',
+        Value: new Date(results.timestamp).toLocaleString(),
+        Unit: ''
+      },
+      {
+        Parameter: 'Material',
+        Value: parameters.material.charAt(0).toUpperCase() + parameters.material.slice(1),
+        Unit: ''
+      },
+      {
+        Parameter: 'Location',
+        Value: parameters.location.charAt(0).toUpperCase() + parameters.location.slice(1),
+        Unit: ''
+      },
+      {
+        Parameter: 'Deposit Size',
+        Value: parameters.depositSize,
+        Unit: 'tons'
+      },
+      {
+        Parameter: 'Ore Concentration',
+        Value: parameters.concentration * 100,
+        Unit: '%'
+      },
+      {
+        Parameter: 'Extraction Efficiency',
+        Value: parameters.extractionEfficiency * 100,
+        Unit: '%'
+      },
+      {
+        Parameter: 'Processing Technology',
+        Value: parameters.processingTechnology,
+        Unit: ''
+      },
+      {
+        Parameter: 'Labor Cost',
+        Value: parameters.laborCost,
+        Unit: '$/hour'
+      },
+      {
+        Parameter: 'Production Volume',
+        Value: results.productionVolume,
+        Unit: 'kg'
+      },
+      {
+        Parameter: 'Cost per kg',
+        Value: results.costPerKg,
+        Unit: '$'
+      },
+      {
+        Parameter: 'Purity',
+        Value: results.purity,
+        Unit: '%'
+      },
+      {
+        Parameter: 'Carbon Impact',
+        Value: results.carbonImpact,
+        Unit: 'tons CO₂'
+      }
+    ];
+    
+    // Export the simulation results
+    exportToExcel(
+      mainData, 
+      `Mining_Simulation_${parameters.material}_${parameters.location}_${new Date().toISOString().split('T')[0]}`
+    );
+    
+    toast({
+      title: "Data Exported",
+      description: "Mining simulation data has been exported to Excel",
+      duration: 3000,
+    });
   };
   
   return (
@@ -430,211 +511,5 @@ const MiningSimulator = () => {
               </button>
               
               <button
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                <Download className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </Card>
-        
-        {/* Results Panel */}
-        <Card className="col-span-1 lg:col-span-2" glassEffect>
-          <h3 className="text-lg font-semibold mb-4 flex items-center justify-between">
-            <span>
-              Simulation Results for {parameters.material.charAt(0).toUpperCase() + parameters.material.slice(1)}
-              {isSimulating && (
-                <span className="ml-2 text-sm text-nuclear-600 animate-pulse">
-                  Calculating...
-                </span>
-              )}
-            </span>
-            
-            {results && (
-              <div className="flex items-center text-xs text-gray-500">
-                <Clock className="w-3 h-3 mr-1" />
-                <span>
-                  {results.timestamp 
-                    ? `Last update: ${new Date(results.timestamp).toLocaleTimeString()}`
-                    : 'Data updated in real-time'
-                  }
-                </span>
-              </div>
-            )}
-          </h3>
-          
-          {results && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Production Volume</p>
-                <p className="text-xl font-bold mt-1">
-                  <AnimatedNumber value={results.productionVolume} formatFn={(val) => val.toFixed(0)} />
-                  <span className="text-sm font-normal ml-1">kg</span>
-                </p>
-              </div>
-              
-              <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Cost per kg</p>
-                <p className="text-xl font-bold mt-1">
-                  $<AnimatedNumber value={results.costPerKg} formatFn={(val) => val.toFixed(2)} />
-                </p>
-              </div>
-              
-              <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Purity</p>
-                <p className="text-xl font-bold mt-1">
-                  <AnimatedNumber value={results.purity} formatFn={(val) => val.toFixed(1)} />%
-                </p>
-              </div>
-              
-              <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Carbon Impact</p>
-                <p className="text-xl font-bold mt-1">
-                  <AnimatedNumber value={results.carbonImpact} formatFn={(val) => val.toFixed(1)} />
-                  <span className="text-sm font-normal ml-1">tons CO₂</span>
-                </p>
-              </div>
-            </div>
-          )}
-          
-          {results && (
-            <div className="h-[300px]">
-              <LineChart 
-                data={results.timeline}
-                lines={[
-                  { dataKey: 'production', color: '#FF7D00', name: 'Production (kg)' },
-                  { dataKey: 'cost', color: '#00C8FF', name: 'Cost ($000s)' }
-                ]}
-                xAxisDataKey="month"
-              />
-            </div>
-          )}
-        </Card>
-        
-        {/* Location Info */}
-        <Card className="col-span-1 lg:col-span-2" animation="slide">
-          <div className="flex items-center mb-4">
-            <Map className="w-5 h-5 mr-2 text-nuclear-600" />
-            <h3 className="text-lg font-semibold">
-              Mining Location: {parameters.location.charAt(0).toUpperCase() + parameters.location.slice(1)}
-            </h3>
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1">
-              <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-3">
-                {locationImages[parameters.location] ? (
-                  <img 
-                    src={locationImages[parameters.location]} 
-                    alt={`Mining operations in ${parameters.location}`}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Compass className="w-12 h-12 text-gray-400 dark:text-gray-600" />
-                  </div>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Geopolitical Risk</span>
-                  <span className="text-sm font-medium">
-                    {parameters.location === 'usa' || parameters.location === 'canada' ? 'Low' : 
-                     parameters.location === 'australia' ? 'Very Low' : 
-                     parameters.location === 'kazakhstan' ? 'Moderate' : 'Low-Moderate'}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Infrastructure</span>
-                  <span className="text-sm font-medium">
-                    {parameters.location === 'usa' || parameters.location === 'canada' || parameters.location === 'australia' ? 'Excellent' : 
-                     parameters.location === 'kazakhstan' ? 'Good' : 'Moderate'}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Resource Quality</span>
-                  <span className="text-sm font-medium">
-                    {parameters.location === 'canada' ? 'Excellent' : 
-                     parameters.location === 'australia' || parameters.location === 'kazakhstan' ? 'Very Good' : 
-                     parameters.location === 'namibia' ? 'Good' : 'Good'}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Regulatory Environment</span>
-                  <span className="text-sm font-medium">
-                    {parameters.location === 'usa' || parameters.location === 'canada' || parameters.location === 'australia' ? 'Strict' : 
-                     parameters.location === 'kazakhstan' ? 'Moderate' : 'Moderate-Strict'}
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex-1">
-              <h4 className="text-sm font-medium mb-2">Location Notes</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                {parameters.location === 'canada' ? 
-                  "Canada is home to some of the highest-grade uranium deposits in the world, particularly in Saskatchewan's Athabasca Basin. Strong infrastructure and political stability make it a premier mining location, though with higher labor costs and strict environmental regulations." : 
-                parameters.location === 'australia' ? 
-                  "Australia holds approximately 28% of the world's uranium reserves. Olympic Dam in South Australia is one of the world's largest uranium deposits. Australia has a stable regulatory environment but relatively high operating costs." :
-                parameters.location === 'kazakhstan' ? 
-                  "Kazakhstan is the world's largest uranium producer, using in-situ leach mining. It offers lower production costs, though with higher geopolitical considerations. The country has been increasing its role in nuclear fuel supply chains." :
-                parameters.location === 'namibia' ? 
-                  "Namibia is home to significant uranium resources, including the Rössing and Husab mines. It offers moderate operational costs with a stable mining regulatory framework. The country continues to develop its uranium industry with international partnerships." :
-                  "The United States has substantial uranium reserves, particularly in Wyoming, Texas, and New Mexico. Higher operational costs are offset by excellent infrastructure and a stable regulatory environment, though permitting can be time-consuming."}
-              </p>
-              
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Top Producers in {parameters.location.charAt(0).toUpperCase() + parameters.location.slice(1)}</h4>
-                <ul className="text-sm list-disc list-inside text-gray-600 dark:text-gray-300">
-                  {parameters.location === 'canada' ? (
-                    <>
-                      <li>Cameco Corporation (McArthur River, Cigar Lake)</li>
-                      <li>Orano Canada (McClean Lake)</li>
-                      <li>Denison Mines</li>
-                    </>
-                  ) : parameters.location === 'australia' ? (
-                    <>
-                      <li>BHP (Olympic Dam)</li>
-                      <li>Rio Tinto (Ranger - now in rehabilitation)</li>
-                      <li>Boss Energy (Honeymoon)</li>
-                    </>
-                  ) : parameters.location === 'kazakhstan' ? (
-                    <>
-                      <li>Kazatomprom</li>
-                      <li>Uranium One</li>
-                      <li>Cameco-Kazatomprom JV</li>
-                    </>
-                  ) : parameters.location === 'namibia' ? (
-                    <>
-                      <li>China National Nuclear Corporation (Husab)</li>
-                      <li>Rio Tinto (Rössing)</li>
-                      <li>Paladin Energy (Langer Heinrich)</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>Cameco (Smith Ranch-Highland)</li>
-                      <li>Energy Fuels</li>
-                      <li>Ur-Energy (Lost Creek)</li>
-                    </>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 italic">
-              Footnote: This platform is intended solely for simulations and analytical purposes. It does not offer or constitute financial, investment, trading, or professional advice of any kind.
-            </p>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-};
+                onClick={
 
-export default MiningSimulator;
