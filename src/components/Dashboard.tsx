@@ -1,7 +1,18 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, TrendingUp, TrendingDown, Activity, BarChart3, Calendar, DollarSign } from 'lucide-react';
+import { 
+  ArrowUpRight, 
+  TrendingUp, 
+  TrendingDown, 
+  Activity, 
+  BarChart3, 
+  Calendar, 
+  DollarSign,
+  Atom,
+  Pickaxe,
+  GitBranch
+} from 'lucide-react';
 import Card from './ui/Card';
 import AnimatedNumber from './ui/AnimatedNumber';
 import LineChart from './charts/LineChart';

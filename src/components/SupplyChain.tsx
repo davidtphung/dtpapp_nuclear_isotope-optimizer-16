@@ -1,6 +1,18 @@
 
 import { useState } from 'react';
-import { MapPin, GitBranch, Filter, Eye, EyeOff, Ship, Truck, ArrowRight } from 'lucide-react';
+import { 
+  MapPin, 
+  GitBranch, 
+  Filter, 
+  Eye, 
+  EyeOff, 
+  Ship, 
+  Truck, 
+  ArrowRight,
+  Pickaxe,
+  Atom,
+  Activity
+} from 'lucide-react';
 import Card from './ui/Card';
 import FlowChart from './charts/FlowChart';
 

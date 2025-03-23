@@ -33,7 +33,7 @@ const Layout = () => {
   const getNavLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
       isActive 
-        ? 'bg-nuclear-100 text-nuclear-900 dark:bg-nuclear-900 dark:text-nuclear-100 font-medium' 
+        ? 'bg-nuclear-100 text-nuclear-500 dark:bg-nuclear-900 dark:text-nuclear-400 font-medium' 
         : 'text-gray-600 dark:text-gray-300 hover:bg-nuclear-50 dark:hover:bg-nuclear-900/50'
     }`;
 
@@ -43,9 +43,9 @@ const Layout = () => {
       <aside className="hidden md:flex flex-col w-64 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <div className="p-6">
           <div className="flex items-center gap-2">
-            <Atom className="w-8 h-8 text-nuclear-600 dark:text-nuclear-400 atom-spin" />
+            <Atom className="w-8 h-8 text-nuclear-500 dark:text-nuclear-400 atom-spin" />
             <h1 className="text-xl font-bold text-nuclear-900 dark:text-nuclear-100">
-              Nuclear<span className="text-nuclear-600">Calc</span>
+              Nuclear<span className="text-nuclear-500">Calc</span>
             </h1>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Supply Chain & Commodities</p>
@@ -72,9 +72,9 @@ const Layout = () => {
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
-            <Atom className="w-6 h-6 text-nuclear-600 dark:text-nuclear-400 atom-spin" />
+            <Atom className="w-6 h-6 text-nuclear-500 dark:text-nuclear-400 atom-spin" />
             <h1 className="text-lg font-bold text-nuclear-900 dark:text-nuclear-100">
-              Nuclear<span className="text-nuclear-600">Calc</span>
+              Nuclear<span className="text-nuclear-500">Calc</span>
             </h1>
           </div>
           

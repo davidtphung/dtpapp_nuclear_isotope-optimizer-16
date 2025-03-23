@@ -19,14 +19,14 @@ const Index = () => {
       {/* Hero Section */}
       <div className="px-4 py-20 md:py-32 text-center relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute top-0 left-0 h-64 w-64 rounded-full bg-nuclear-600 filter blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-atom-600 filter blur-3xl"></div>
+          <div className="absolute top-0 left-0 h-64 w-64 rounded-full bg-nuclear-500 filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-fission-500 filter blur-3xl"></div>
         </div>
 
         <div className="relative z-10 max-w-3xl mx-auto">
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <Atom className="w-16 h-16 text-nuclear-600 atom-spin" />
+              <Atom className="w-16 h-16 text-nuclear-500 atom-spin" />
               <div className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-sm rounded-full nuclear-glow"></div>
             </div>
           </div>
@@ -42,7 +42,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               to="/dashboard"
-              className="px-6 py-3 bg-nuclear-600 text-white rounded-lg hover:bg-nuclear-700 transition-colors flex items-center justify-center"
+              className="px-6 py-3 bg-nuclear-500 text-white rounded-lg hover:bg-nuclear-600 transition-colors flex items-center justify-center"
             >
               Launch Dashboard
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -72,7 +72,7 @@ const Index = () => {
           >
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-nuclear-100 dark:bg-nuclear-900/50 rounded-full">
-                <Pickaxe className="w-8 h-8 text-nuclear-600 dark:text-nuclear-400" />
+                <Pickaxe className="w-8 h-8 text-nuclear-500 dark:text-nuclear-400" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-3">Mining Simulator</h3>
@@ -81,7 +81,7 @@ const Index = () => {
             </p>
             <Link
               to="/mining"
-              className="text-nuclear-600 hover:text-nuclear-700 dark:text-nuclear-400 dark:hover:text-nuclear-300 font-medium inline-flex items-center"
+              className="text-nuclear-500 hover:text-nuclear-700 dark:text-nuclear-400 dark:hover:text-nuclear-300 font-medium inline-flex items-center"
             >
               Launch Simulator
               <ArrowRight className="ml-1 w-4 h-4" />
@@ -94,8 +94,8 @@ const Index = () => {
             style={{ animationDelay: '200ms' }}
           >
             <div className="flex justify-center mb-4">
-              <div className="p-3 bg-atom-100 dark:bg-atom-900/50 rounded-full">
-                <GitBranch className="w-8 h-8 text-atom-600 dark:text-atom-400" />
+              <div className="p-3 bg-fission-100 dark:bg-fission-900/50 rounded-full">
+                <GitBranch className="w-8 h-8 text-fission-500 dark:text-fission-400" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-3">Supply Chain Visualizer</h3>
@@ -104,7 +104,7 @@ const Index = () => {
             </p>
             <Link
               to="/supply-chain"
-              className="text-atom-600 hover:text-atom-700 dark:text-atom-400 dark:hover:text-atom-300 font-medium inline-flex items-center"
+              className="text-fission-500 hover:text-fission-700 dark:text-fission-400 dark:hover:text-fission-300 font-medium inline-flex items-center"
             >
               View Supply Chain
               <ArrowRight className="ml-1 w-4 h-4" />
@@ -141,7 +141,7 @@ const Index = () => {
           >
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-nuclear-100 dark:bg-nuclear-900/50 rounded-full">
-                <Calculator className="w-8 h-8 text-nuclear-600 dark:text-nuclear-400" />
+                <Calculator className="w-8 h-8 text-nuclear-500 dark:text-nuclear-400" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-3">Cost Calculator</h3>
@@ -150,7 +150,7 @@ const Index = () => {
             </p>
             <Link
               to="/calculator"
-              className="text-nuclear-600 hover:text-nuclear-700 dark:text-nuclear-400 dark:hover:text-nuclear-300 font-medium inline-flex items-center"
+              className="text-nuclear-500 hover:text-nuclear-700 dark:text-nuclear-400 dark:hover:text-nuclear-300 font-medium inline-flex items-center"
             >
               Calculate Costs
               <ArrowRight className="ml-1 w-4 h-4" />
@@ -175,7 +175,7 @@ const Index = () => {
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 p-1 bg-nuclear-100 dark:bg-nuclear-900/50 rounded-full mt-1 mr-3">
-                    <Atom className="w-5 h-5 text-nuclear-600 dark:text-nuclear-400" />
+                    <Atom className="w-5 h-5 text-nuclear-500 dark:text-nuclear-400" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-nuclear-900 dark:text-nuclear-100">Data-Driven Insights</h3>
@@ -187,7 +187,7 @@ const Index = () => {
                 
                 <div className="flex items-start">
                   <div className="flex-shrink-0 p-1 bg-nuclear-100 dark:bg-nuclear-900/50 rounded-full mt-1 mr-3">
-                    <Atom className="w-5 h-5 text-nuclear-600 dark:text-nuclear-400" />
+                    <Atom className="w-5 h-5 text-nuclear-500 dark:text-nuclear-400" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-nuclear-900 dark:text-nuclear-100">Scenario Testing</h3>
@@ -199,7 +199,7 @@ const Index = () => {
                 
                 <div className="flex items-start">
                   <div className="flex-shrink-0 p-1 bg-nuclear-100 dark:bg-nuclear-900/50 rounded-full mt-1 mr-3">
-                    <Atom className="w-5 h-5 text-nuclear-600 dark:text-nuclear-400" />
+                    <Atom className="w-5 h-5 text-nuclear-500 dark:text-nuclear-400" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-nuclear-900 dark:text-nuclear-100">Comprehensive Reporting</h3>
@@ -250,8 +250,8 @@ const Index = () => {
       {/* Call to Action */}
       <div className="px-4 py-20 text-center relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-nuclear-600 filter blur-3xl"></div>
-          <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-atom-600 filter blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-nuclear-500 filter blur-3xl"></div>
+          <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-fission-500 filter blur-3xl"></div>
         </div>
         
         <div className="relative z-10 max-w-3xl mx-auto">
@@ -266,7 +266,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               to="/dashboard"
-              className="px-6 py-3 bg-nuclear-600 text-white rounded-lg hover:bg-nuclear-700 transition-colors flex items-center justify-center"
+              className="px-6 py-3 bg-nuclear-500 text-white rounded-lg hover:bg-nuclear-600 transition-colors flex items-center justify-center"
             >
               Get Started
               <ArrowRight className="ml-2 w-5 h-5" />
