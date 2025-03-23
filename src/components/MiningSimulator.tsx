@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Sliders, Play, RefreshCw, Download, Map, Compass, Clock } from 'lucide-react';
 import { Card } from './ui/card';
@@ -511,5 +512,161 @@ const MiningSimulator = () => {
               </button>
               
               <button
-                onClick={
+                onClick={handleExportData}
+                disabled={!results}
+                className="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export Data
+              </button>
+            </div>
+          </div>
+        </Card>
+        
+        {/* Results Panel */}
+        {results && (
+          <>
+            {/* Summary Card */}
+            <Card className="col-span-1">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center">
+                  <Clock className="w-5 h-5 mr-2 text-nuclear-600" />
+                  Simulation Results
+                </h3>
+                <span className="text-xs text-gray-500">
+                  {new Date(results.timestamp).toLocaleString()}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Production Volume</p>
+                  <p className="text-2xl font-bold mt-1">
+                    <AnimatedNumber
+                      value={results.productionVolume}
+                      formatFn={(val) => `${Math.round(val).toLocaleString()} kg`}
+                    />
+                  </p>
+                </div>
+                
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Cost per kg</p>
+                  <p className="text-2xl font-bold mt-1">
+                    <AnimatedNumber
+                      value={results.costPerKg}
+                      formatFn={(val) => `$${val.toFixed(2)}`}
+                    />
+                  </p>
+                </div>
+                
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Purity</p>
+                  <p className="text-2xl font-bold mt-1">
+                    <AnimatedNumber
+                      value={results.purity}
+                      formatFn={(val) => `${val.toFixed(1)}%`}
+                    />
+                  </p>
+                </div>
+                
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Carbon Impact</p>
+                  <p className="text-2xl font-bold mt-1">
+                    <AnimatedNumber
+                      value={results.carbonImpact}
+                      formatFn={(val) => `${val.toFixed(1)} t CO₂`}
+                    />
+                  </p>
+                </div>
+              </div>
+            </Card>
+            
+            {/* Charts Card */}
+            <Card className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Monthly Production & Costs</h3>
+                <button
+                  onClick={handleExportData}
+                  className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  Export
+                </button>
+              </div>
+              
+              <LineChart
+                data={results.timeline}
+                xAxisDataKey="month"
+                lines={[
+                  {
+                    dataKey: "production",
+                    color: "#3B82F6",
+                    name: "Production (kg)"
+                  },
+                  {
+                    dataKey: "cost",
+                    color: "#EF4444",
+                    name: "Cost (thousands $)"
+                  }
+                ]}
+                height={300}
+              />
+            </Card>
+            
+            {/* Location Card */}
+            <Card className="lg:col-span-3">
+              <div className="flex items-center mb-4">
+                <Map className="w-5 h-5 mr-2 text-nuclear-600" />
+                <h3 className="text-lg font-semibold">
+                  Mining Location: {parameters.location.charAt(0).toUpperCase() + parameters.location.slice(1)}
+                </h3>
+              </div>
+              
+              <div className="aspect-video rounded-lg overflow-hidden">
+                <img 
+                  src={locationImages[parameters.location]} 
+                  alt={`Mining in ${parameters.location}`} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center">
+                  <Compass className="w-5 h-5 mr-3 text-nuclear-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Material</p>
+                    <p className="font-medium">
+                      {parameters.material.charAt(0).toUpperCase() + parameters.material.slice(1)}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center">
+                  <Sliders className="w-5 h-5 mr-3 text-nuclear-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Technology</p>
+                    <p className="font-medium">
+                      {parameters.processingTechnology.charAt(0).toUpperCase() + parameters.processingTechnology.slice(1)}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center">
+                  <Clock className="w-5 h-5 mr-3 text-nuclear-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Last Updated</p>
+                    <p className="font-medium">
+                      {new Date(results.timestamp).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
+export default MiningSimulator;
