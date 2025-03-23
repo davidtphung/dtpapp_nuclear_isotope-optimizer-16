@@ -11,6 +11,7 @@ import {
   X,
   Home
 } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,11 +43,14 @@ const Layout = () => {
       {/* Sidebar - desktop */}
       <aside className="hidden md:flex flex-col w-64 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <div className="p-6">
-          <div className="flex items-center gap-2">
-            <Atom className="w-8 h-8 text-nuclear-500 dark:text-nuclear-400 atom-spin" />
-            <h1 className="text-xl font-bold text-nuclear-900 dark:text-nuclear-100">
-              Nuclear<span className="text-nuclear-500">Calc</span>
-            </h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Atom className="w-8 h-8 text-nuclear-500 dark:text-nuclear-400 atom-spin" />
+              <h1 className="text-xl font-bold text-nuclear-900 dark:text-nuclear-100">
+                Nuclear<span className="text-nuclear-500">Calc</span>
+              </h1>
+            </div>
+            <ThemeToggle />
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Supply Chain & Commodities</p>
         </div>
@@ -78,12 +82,15 @@ const Layout = () => {
             </h1>
           </div>
           
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
         
         {/* Mobile navigation */}

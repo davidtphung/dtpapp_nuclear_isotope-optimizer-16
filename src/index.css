@@ -7,6 +7,7 @@
 
 @layer base {
   :root {
+    /* Light mode */
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
@@ -47,6 +48,7 @@
   }
 
   .dark {
+    /* Dark mode with enhanced electric orange and fission red */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -176,6 +178,27 @@
 
   .fission-glow {
     @apply shadow-[0_0_15px_rgba(239,68,68,0.5)];
+  }
+  
+  /* Enhanced electric orange elements */
+  .electric-border {
+    @apply border border-nuclear-500 dark:border-nuclear-400;
+  }
+  
+  .electric-text {
+    @apply text-nuclear-500 dark:text-nuclear-400;
+  }
+  
+  .fission-text {
+    @apply text-fission-500 dark:text-fission-400;
+  }
+  
+  .nuclear-gradient {
+    @apply bg-gradient-to-r from-nuclear-500 to-fission-500 text-white;
+  }
+  
+  .nuclear-card {
+    @apply bg-gradient-to-br from-nuclear-950/90 to-gray-900/90 text-white border border-nuclear-800;
   }
 }
 

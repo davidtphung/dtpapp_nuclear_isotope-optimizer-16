@@ -9,6 +9,8 @@ interface CardProps {
   glow?: boolean;
   hover?: boolean;
   animation?: 'fade' | 'slide' | 'float' | 'none';
+  style?: React.CSSProperties;
+  onClick?: () => void;
 }
 
 const Card = ({
@@ -17,7 +19,9 @@ const Card = ({
   glassEffect = false,
   glow = false,
   hover = true,
-  animation = 'none'
+  animation = 'none',
+  style,
+  onClick
 }: CardProps) => {
   const getAnimationClass = () => {
     switch (animation) {
@@ -43,6 +47,8 @@ const Card = ({
         getAnimationClass(),
         className
       )}
+      style={style}
+      onClick={onClick}
     >
       {children}
     </div>
