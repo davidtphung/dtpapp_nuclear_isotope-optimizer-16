@@ -1,9 +1,10 @@
 
-import { useState, useEffect } from 'react';
-import { Sliders, Play, RefreshCw, Download, Map, Compass } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Sliders, Play, RefreshCw, Download, Map, Compass, Clock } from 'lucide-react';
 import Card from './ui/Card';
 import AnimatedNumber from './ui/AnimatedNumber';
 import LineChart from './charts/LineChart';
+import { useToast } from './ui/use-toast';
 
 // Define types for our mining simulation
 interface MiningParameters {
@@ -21,8 +22,18 @@ interface SimulationResults {
   costPerKg: number;
   purity: number;
   carbonImpact: number;
+  timestamp: string;
   timeline: { month: string; production: number; cost: number }[];
 }
+
+// Location data to show on the map
+const locationImages = {
+  australia: "https://images.unsplash.com/photo-1523482580063-e0ef081450ea?q=80&w=800&auto=format&fit=crop",
+  canada: "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?q=80&w=800&auto=format&fit=crop",
+  kazakhstan: "https://images.unsplash.com/photo-1504615458222-979e04d69a27?q=80&w=800&auto=format&fit=crop",
+  namibia: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800&auto=format&fit=crop",
+  usa: "https://images.unsplash.com/photo-1592409765643-c107e9110e17?q=80&w=800&auto=format&fit=crop"
+};
 
 const MiningSimulator = () => {
   // Default mining parameters
@@ -38,13 +49,95 @@ const MiningSimulator = () => {
   
   const [results, setResults] = useState<SimulationResults | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [dataUpdateInterval, setDataUpdateInterval] = useState<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
+  const simulationRef = useRef<number>(0);
+  
+  // Update data in real-time (when commodities market is open)
+  useEffect(() => {
+    // Function to check if commodities market is open
+    const isMarketOpen = () => {
+      const now = new Date();
+      const day = now.getDay();
+      const hour = now.getHours();
+      
+      // Simplified check: Monday-Friday, 9 AM to 5 PM
+      return day >= 1 && day <= 5 && hour >= 9 && hour <= 17;
+    };
+    
+    // Function to update data at regular intervals
+    const startDataUpdates = () => {
+      // Clear existing interval if any
+      if (dataUpdateInterval) {
+        clearInterval(dataUpdateInterval);
+      }
+      
+      // Set new interval - update every minute when market is open, every hour otherwise
+      const intervalTime = isMarketOpen() ? 60 * 1000 : 60 * 60 * 1000;
+      const interval = setInterval(() => {
+        if (results) {
+          // Apply small random fluctuations to simulate real-time market changes
+          const fluctuation = 0.95 + (Math.random() * 0.1); // ±5% change
+          
+          setResults(prev => {
+            if (!prev) return null;
+            
+            return {
+              ...prev,
+              costPerKg: prev.costPerKg * fluctuation,
+              timestamp: new Date().toISOString(),
+              timeline: prev.timeline.map((point, i) => {
+                // Only update the most recent data points
+                if (i > prev.timeline.length - 3) {
+                  return {
+                    ...point,
+                    cost: point.cost * fluctuation,
+                    production: point.production * (1 + (Math.random() * 0.04 - 0.02)) // ±2% change in production
+                  };
+                }
+                return point;
+              })
+            };
+          });
+          
+          // Show notification if market is open
+          if (isMarketOpen()) {
+            toast({
+              title: "Data Updated",
+              description: `Real-time data updated at ${new Date().toLocaleTimeString()}`,
+              duration: 3000,
+            });
+          }
+        }
+      }, intervalTime);
+      
+      setDataUpdateInterval(interval);
+    };
+    
+    // Start data updates when component mounts
+    startDataUpdates();
+    
+    // Cleanup on unmount
+    return () => {
+      if (dataUpdateInterval) {
+        clearInterval(dataUpdateInterval);
+      }
+    };
+  }, [results, toast]);
   
   // Run the simulation when parameters change or on manual trigger
   const runSimulation = () => {
     setIsSimulating(true);
     
+    // Increment simulation ID to track the current simulation
+    simulationRef.current += 1;
+    const currentSimulation = simulationRef.current;
+    
     // Simulate a delay for processing
     setTimeout(() => {
+      // Skip if another simulation was started
+      if (currentSimulation !== simulationRef.current) return;
+      
       // This is a simplified simulation model
       const efficiency = 
         parameters.processingTechnology === 'basic' ? 0.7 :
@@ -101,7 +194,14 @@ const MiningSimulator = () => {
         costPerKg,
         purity,
         carbonImpact,
+        timestamp: new Date().toISOString(),
         timeline
+      });
+      
+      toast({
+        title: "Simulation Complete",
+        description: `New simulation results for ${parameters.material} mining in ${parameters.location}`,
+        duration: 3000,
       });
       
       setIsSimulating(false);
@@ -340,12 +440,26 @@ const MiningSimulator = () => {
         
         {/* Results Panel */}
         <Card className="col-span-1 lg:col-span-2" glassEffect>
-          <h3 className="text-lg font-semibold mb-4">
-            Simulation Results for {parameters.material.charAt(0).toUpperCase() + parameters.material.slice(1)}
-            {isSimulating && (
-              <span className="ml-2 text-sm text-nuclear-600 animate-pulse">
-                Calculating...
-              </span>
+          <h3 className="text-lg font-semibold mb-4 flex items-center justify-between">
+            <span>
+              Simulation Results for {parameters.material.charAt(0).toUpperCase() + parameters.material.slice(1)}
+              {isSimulating && (
+                <span className="ml-2 text-sm text-nuclear-600 animate-pulse">
+                  Calculating...
+                </span>
+              )}
+            </span>
+            
+            {results && (
+              <div className="flex items-center text-xs text-gray-500">
+                <Clock className="w-3 h-3 mr-1" />
+                <span>
+                  {results.timestamp 
+                    ? `Last update: ${new Date(results.timestamp).toLocaleTimeString()}`
+                    : 'Data updated in real-time'
+                  }
+                </span>
+              </div>
             )}
           </h3>
           
@@ -388,8 +502,8 @@ const MiningSimulator = () => {
               <LineChart 
                 data={results.timeline}
                 lines={[
-                  { dataKey: 'production', color: '#4C7DAC', name: 'Production (kg)' },
-                  { dataKey: 'cost', color: '#24A08D', name: 'Cost ($000s)' }
+                  { dataKey: 'production', color: '#FF7D00', name: 'Production (kg)' },
+                  { dataKey: 'cost', color: '#00C8FF', name: 'Cost ($000s)' }
                 ]}
                 xAxisDataKey="month"
               />
@@ -408,8 +522,18 @@ const MiningSimulator = () => {
           
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-1">
-              <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-3">
-                <Compass className="w-12 h-12 text-gray-400 dark:text-gray-600" />
+              <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-3">
+                {locationImages[parameters.location] ? (
+                  <img 
+                    src={locationImages[parameters.location]} 
+                    alt={`Mining operations in ${parameters.location}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Compass className="w-12 h-12 text-gray-400 dark:text-gray-600" />
+                  </div>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -500,6 +624,12 @@ const MiningSimulator = () => {
                 </ul>
               </div>
             </div>
+          </div>
+          
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-500 italic">
+              Footnote: This platform is intended solely for simulations and analytical purposes. It does not offer or constitute financial, investment, trading, or professional advice of any kind.
+            </p>
           </div>
         </Card>
       </div>
